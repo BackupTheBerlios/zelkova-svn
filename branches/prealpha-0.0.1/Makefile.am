@@ -1,0 +1,9 @@
+## $Id$
+AUTOMAKE_OPTIONS=foreign no-dependencies
+SUBDIRS = src doc
+
+INCLUDES = @INCLUDES@
+
+EXTRA_DIST = ChangeLog COPYING RELEASE.NOTES
+
+DISTCLEANFILES=stamp-h.in

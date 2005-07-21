@@ -1,0 +1,22 @@
+/* config.h.in.  Generated from configure.in by autoheader.  */
+
+/* Define if LINUX */
+#undef LINUX
+
+/* Define to 1 if you have the ANSI C header files. */
+#undef STDC_HEADERS
+
+/* Version number of package */
+#undef VERSION
+
+/* Define __FUNCTION__ as required. */
+#undef __FUNCTION__
+
+/* Define to `uint16_t' if <sys/types.h> does not define. */
+#undef u_int16_t
+
+/* Define to `uint32_t' if <sys/types.h> does not define. */
+#undef u_int32_t
+
+/* Define to `uint8_t' if <sys/types.h> does not define. */
+#undef u_int8_t

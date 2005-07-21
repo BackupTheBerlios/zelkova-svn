@@ -1,0 +1,15 @@
+Zelkova Installation Manual v0.1
+
+1. Download Linux kernel v2.4.x and extract it.
+
+2. Add CONFIG_NETFILTER feature to the kernel configuration.
+
+3. Rebuild kernel and reinstall it.
+
+4. Download zelkova sources and extract it.
+
+5. Build zelkova
+  $ make
+
+6. Load the kernel module
+  # insmod zelkova.o
