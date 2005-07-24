@@ -14,6 +14,3 @@ Zelkova Installation Manual v0.1
 
 6. Load the kernel module
   # insmod zelkova.o
-
-
-$Id$
