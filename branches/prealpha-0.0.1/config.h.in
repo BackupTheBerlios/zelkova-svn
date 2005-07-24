@@ -1,22 +1,22 @@
 /* config.h.in.  Generated from configure.in by autoheader.  */
 
-/* Define if LINUX */
-#undef LINUX
+/* Name of package */
+#undef PACKAGE
 
-/* Define to 1 if you have the ANSI C header files. */
-#undef STDC_HEADERS
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
+
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
 
 /* Version number of package */
 #undef VERSION
-
-/* Define __FUNCTION__ as required. */
-#undef __FUNCTION__
-
-/* Define to `uint16_t' if <sys/types.h> does not define. */
-#undef u_int16_t
-
-/* Define to `uint32_t' if <sys/types.h> does not define. */
-#undef u_int32_t
-
-/* Define to `uint8_t' if <sys/types.h> does not define. */
-#undef u_int8_t

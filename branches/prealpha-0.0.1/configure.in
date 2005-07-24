@@ -1,0 +1,16 @@
+dnl Process this file with autoconf to produce a configure script.
+
+AC_PREREQ(2.12)
+AC_INIT(tools/zktables.h)
+AM_CONFIG_HEADER(config.h)
+
+zelkova_cv_version=`cat $srcdir/VERSION`
+
+AM_INIT_AUTOMAKE(zktables, $zelkova_cv_version)
+
+AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_MAKE_SET
+AC_PROG_INSTALL
+
+AC_OUTPUT(Makefile tools/Makefile docs/Makefile)

@@ -1,6 +1,3 @@
-$Id$
-
-
 Zelkova Installation Manual v0.1
 
 1. Download Linux kernel v2.4.x and extract it.
@@ -12,8 +9,11 @@ Zelkova Installation Manual v0.1
 4. Download zelkova sources and extract it.
 
 5. Build zelkova
+  $ ./configure
   $ make
 
 6. Load the kernel module
   # insmod zelkova.o
 
+
+$Id$

@@ -25,30 +25,37 @@
 
 /*! \file */
 
-#define __NO_VERSION__
+#ifndef __ZKPKTINFO_H__
+#define __ZKPKTINFO_H__
 
-#include <linux/kernel.h>			/* printk() */
+#include "fistree.h"
 
-#include "zelkova.h"
+struct zkipsess;
 
-/*!
- *---------------------------------------------------------------------------
- *
- * \fn static int zelkova_ioctl_filter(uint cmd, void *data, int mode)
- * \brief Process data exchange operations
- * \param uint cmd
- * \param void *data
- * \param int mode
- * \date 19 Jul, 2005
- *
- *  Process data exchange operations between kernel module and
- *  another applications.
- *
- *---------------------------------------------------------------------------
- */
+/* zkpktinfo_t */
 
-int zelkova_ioctl_filter(uint cmd, void *data, int mode)
-{
-	return 0;
-}
+typedef struct zkpktinfo {
+	int				zpi_out;		/* outbound = 1, inbound = 0 */
+	int				zpi_dir;		/* request on session = 0, response on session = 1 */
+	struct sk_buff	*zpi_buff;	/* original sk_buff block */
 
+	fisrule_t		*zpi_rule;		/* selected rule */
+	struct zkipsess	*zpi_sess;		/* selected session */
+
+	uint8_t			zpi_hlen;		/* IP header length */
+	uint8_t			zpi_reserved1;	/* Not Used */
+	uint16_t		zpi_offset;		/* fragment offset */
+
+	union {
+		uint32_t	id[MAX_FISTREE_DIM];	/* classification id. */
+		uint16_t	pd[MAX_FISTREE_DIM << 1];	/* (protocol/port) */
+	} zpi_i;
+
+	uint32_t		zpi_hv;			/* session hash vector */
+
+	struct net_device	*zpi_ifp;	/* pointer to the network interface */
+	struct sk_buff	*zpi_fragbuff;	/* fragments with the same session */
+	uint32_t		zpi_ipopt;		/* arranged IP options */
+} zkpktinfo_t;
+
+#endif	/* __ZKPKTINFO_H__ */

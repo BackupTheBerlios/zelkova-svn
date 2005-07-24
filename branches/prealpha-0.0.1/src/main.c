@@ -23,6 +23,8 @@
  *----------------------------------------------------------------------------
  */
 
+/*! \file */
+
 #ifndef __KERNEL__
 # define __KERNEL__
 #endif
@@ -48,12 +50,16 @@
 
 #include "zelkova.h"
 #include "zkuio.h"
+#include "zkpktinfo.h"				/* zkpktinfo_t */
 
 
 /*
  * Static Functions & Variables
  */
-static ssize_t		zelkova_read(struct file *, char *, size_t, loff_t *);
+static int __init zelkova_init_module(void);
+static void __exit zelkova_cleanup_module(void);
+
+static ssize_t		zelkova_read(struct file *file, char *buf, size_t nbytes, loff_t *ppos);
 static unsigned int	zelkova_poll(struct file *, struct poll_table_struct *);
 static int			zelkova_ioctl(struct inode *, struct file *, unsigned int, unsigned long);
 static int			zelkova_open(struct inode *, struct file *);
@@ -115,7 +121,7 @@ static struct nf_hook_ops zkfv_ops[] = {
 static int	zelkova_run = 0;
 
 
-int zelkova_major =		ZELKOVA_MAJOR;
+int zelkova_major =		ZELKOVA_MAJOR;	/**< Detailed description */
 int zelkova_nr_devs =	ZELKOVA_NR_DEVS;
 
 MODULE_PARM(zelkova_major, "i");
@@ -140,9 +146,10 @@ extern int	zelkova_ioctl_filter(uint cmd, void *data, int mode);
  *
  * \fn int zelkova_init_module(void)
  * \brief Initializes the zelkova module
- * \param 
+ * \param NONE
  * Date: 19 Jul, 2005
- *  Attaches into kernel interceptor, and initializes character devices.
+ *
+ * Attaches into kernel interceptor, and initializes character devices.
  *
  *---------------------------------------------------------------------------
  */
@@ -235,8 +242,9 @@ static void __exit zelkova_cleanup_module(void)
  *
  * \fn int zelkova_attach(void)
  * \brief Initializes variables in the zelkova module
- * \param 
- * Date: 19 Jul, 2005
+ * \param NONE
+ * \date 19 Jul, 2005
+ *
  *  Initializes variables in the zelkova module
  *
  *---------------------------------------------------------------------------
@@ -261,8 +269,9 @@ void zelkova_attach(void)
  *
  * \fn int zelkova_detach(void)
  * \brief Cleans variables in the zelkova module
- * \param 
- * Date: 21 Jul, 2005
+ * \param NONE
+ * \date 21 Jul, 2005
+ *
  *  Cleans variables in the zelkova module
  *
  *---------------------------------------------------------------------------
@@ -281,8 +290,12 @@ void zelkova_detach(void)
  *
  * \fn static ssize_t zelkova_read(struct file *file, char *buf, size_t nbytes, loff_t *ppos)
  * \brief Get log informations from the zelkova device
- * \param 
- * Date: 21 Jul, 2005
+ * \param struct file *file
+ * \param char *buf
+ * \param size_t nbytes
+ * \param loff_t *ppos
+ * \date 21 Jul, 2005
+ *
  *  Get log informations from the zelkova device
  *
  *---------------------------------------------------------------------------
@@ -317,8 +330,10 @@ static ssize_t zelkova_read(struct file *file, char *buf, size_t nbytes, loff_t 
  *
  * \fn static unsigned int zelkova_poll(struct file *file, struct poll_table_struct *wait)
  * \brief processes select operations on the character device
- * \param 
- * Date: 21 Jul, 2005
+ * \param struct file *file
+ * \param struct poll_table_struct *
+ * \date 21 Jul, 2005
+ *
  *  Processes select operations on the character device
  *
  *---------------------------------------------------------------------------
@@ -350,8 +365,12 @@ static unsigned int zelkova_poll(struct file *file, struct poll_table_struct *wa
  *
  * \fn static int zelkova_ioctl(struct inode *inode, struct file *file, unsigned int cmd, unsigned long arg)
  * \brief Process data exchange operations
- * \param 
- * Date: 21 Jul, 2005
+ * \param struct inode *inode
+ * \param struct file *file
+ * \param unsigned int cmd
+ * \param unsigned long arg
+ * \date 21 Jul, 2005
+ *
  *  Process data exchange operations between kernel module and
  *  another applications.
  *
@@ -395,8 +414,10 @@ static int zelkova_ioctl(struct inode *inode, struct file *file, unsigned int cm
  *
  * \fn static int zelkova_open(struct inode *inode, struct file *file)
  * \brief Open the zelkova device
- * \param 
- * Date: 21 Jul, 2005
+ * \param struct inode *inode
+ * \param struct file *file
+ * \date 21 Jul, 2005
+ *
  *  Open the zelkova device
  *
  *---------------------------------------------------------------------------
@@ -419,8 +440,10 @@ static int zelkova_open(struct inode *inode, struct file *file)
  *
  * \fn static int zelkova_release(struct inode *inode, struct file *file)
  * \brief Close the zelkova device
- * \param 
- * Date: 21 Jul, 2005
+ * \param struct inode *inode
+ * \param struct file *file
+ * \date 21 Jul, 2005
+ *
  *  Close the zelkova device
  *
  *---------------------------------------------------------------------------
@@ -438,14 +461,49 @@ static int zelkova_release(struct inode *inode, struct file *file)
 }
 
 
+/*!
+ *---------------------------------------------------------------------------
+ *
+ * \fn static unsigned int zkfv_input_check(unsigned int hook, struct sk_buff **pskb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *))
+ * \brief Check packets on the netfilter input hook
+ * \param unsigned int hook
+ * \param struct sk_buff **pskb
+ * \param const struct net_device *in
+ * \param const struct net_device *out
+ * \param int (*okfn)(struct sk_buff *)
+ * \date 23 Jul, 2005
+ *
+ *  Check packets on the netfilter input hook
+ *
+ *---------------------------------------------------------------------------
+ */
+
 static unsigned int zkfv_input_check (unsigned int hook,
 		struct sk_buff **pskb,
 		const struct net_device *in,
 		const struct net_device *out,
 		int (*okfn)(struct sk_buff *))
 {
-	return 0;
+	return NF_ACCEPT;
 }
+
+
+/*!
+ *---------------------------------------------------------------------------
+ *
+ * \fn static unsigned int zkfv_forward_check(unsigned int hook, struct sk_buff **pskb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *))
+ * \brief Check packets on the netfilter forward hook
+ * \param unsigned int hook
+ * \param struct sk_buff **pskb
+ * \param const struct net_device *in
+ * \param const struct net_device *out
+ * \param int (*okfn)(struct sk_buff *)
+ * \date 23 Jul, 2005
+ *
+ *  Check packets on the netfilter forward hook
+ *
+ *---------------------------------------------------------------------------
+ */
 
 static unsigned int zkfv_forward_check (unsigned int hook,
 		struct sk_buff **pskb,
@@ -453,8 +511,26 @@ static unsigned int zkfv_forward_check (unsigned int hook,
 		const struct net_device *out,
 		int (*okfn)(struct sk_buff *))
 {
-	return 0;
+	return NF_ACCEPT;
 }
+
+
+/*!
+ *---------------------------------------------------------------------------
+ *
+ * \fn static unsigned int zkfv_output_check(unsigned int hook, struct sk_buff **pskb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *))
+ * \brief Check packets on the netfilter output hook
+ * \param unsigned int hook
+ * \param struct sk_buff **pskb
+ * \param const struct net_device *in
+ * \param const struct net_device *out
+ * \param int (*okfn)(struct sk_buff *)
+ * \date 23 Jul, 2005
+ *
+ *  Check packets on the netfilter output hook
+ *
+ *---------------------------------------------------------------------------
+ */
 
 static unsigned int zkfv_output_check (unsigned int hook,
 		struct sk_buff **pskb,
@@ -462,7 +538,7 @@ static unsigned int zkfv_output_check (unsigned int hook,
 		const struct net_device *out,
 		int (*okfn)(struct sk_buff *))
 {
-	return 0;
+	return NF_ACCEPT;
 }
 
 module_init(zelkova_init_module);

@@ -23,6 +23,8 @@
  *----------------------------------------------------------------------------
  */
 
+/*! \file */
+
 #include <linux/ioctl.h>
 
 /* version dependencies have been confined to a separate file */

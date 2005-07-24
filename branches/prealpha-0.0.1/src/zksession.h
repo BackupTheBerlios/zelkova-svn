@@ -25,30 +25,36 @@
 
 /*! \file */
 
-#define __NO_VERSION__
-
-#include <linux/kernel.h>			/* printk() */
+#ifndef __ZKSESSION_H__
+#define __ZKSESSION_H__
 
 #include "zelkova.h"
 
-/*!
- *---------------------------------------------------------------------------
- *
- * \fn static int zelkova_ioctl_filter(uint cmd, void *data, int mode)
- * \brief Process data exchange operations
- * \param uint cmd
- * \param void *data
- * \param int mode
- * \date 19 Jul, 2005
- *
- *  Process data exchange operations between kernel module and
- *  another applications.
- *
- *---------------------------------------------------------------------------
- */
+/* zkipsess_t */
 
-int zelkova_ioctl_filter(uint cmd, void *data, int mode)
-{
-	return 0;
-}
+typedef struct zkipsess {
+	struct zkipsess		*zis_prev;	/* The previous node of linked list */
+	struct zkipsess		*zis_next;	/* The next node of linked list */
 
+	struct zkipsess		*zis_hnext;	/* The next node of hash chain */
+
+	union {
+		uint32_t		id[MAX_FISTREE_DIM];	/* classification id. */
+		uint16_t		pd[MAX_FISTREE_DIM << 1];	/* (protocol/port) */
+	} zis_i;
+
+	uint32_t			zis_hv;		/* session hash vector */
+
+	uint32_t			zis_flag;	/* flags */
+	uint32_t			zis_pass;	/* filtering action */
+	uint32_t			zis_age;	/* age value of session table entry */
+
+	fisrule_t			*zis_rule;	/* The selected rule */
+
+	uint32_t			zis_ruleid;	/* rule id. (32bit integer) */
+} zkipsess_t;
+
+#define			zis_id		zis_i.id
+#define			zis_pd		zis_i.pd
+
+#endif	/* __ZKSESSION_H__ */

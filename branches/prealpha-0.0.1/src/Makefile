@@ -29,7 +29,7 @@ else
 endif
 
 WARN	:= -Wall
-INCLUDE += -I$(INCLUDEDIR)
+INCLUDE += -I$(INCLUDEDIR) -I./fistree
 #INCLUDE += -isystem /lib/modules/`uname -r`/build/include
 
 CFLAGS	:= -D__KERNEL__ -DMODULE -DEXPORT_SYMTAB ${WARN} ${DEBFLAGS} ${INCLUDE}

@@ -1,15 +1,69 @@
 Zelkova Version 0.0.1
+=====================
 
-by Dongsu Park <advance@mail.berlios.de>
+Author:
+ Dongsu Park <advance@berlios.de>
 
 Distribution Site:
-http://zelkova.berlios.de/
+ http://dongsu.net/zelkova/
+ http://zelkova.berlios.de/
 
 ******************************************************************************
 Description
+-----------
+
+ Zelkova is a firewall with capabilities of Intrusion Prevention System.
+ Its goal is to make a powerful and compact firewall which can replace
+ netfilter, the traditional firewall in Linux. Today it is obvious that 
+ firewall has not only simple packet filter features, but also stateful
+ inspection and deep packet inspection features. Therefore this project
+ would cover even deep packet inspection.
+
+ Details of features are listed below.
+
+  * Basic Packet filter
+  * Packet filter rule management with the FIS-tree architecture
+  * Session management for stateful inspection
+  * NAT: Network Address (Port) Translation
+  * IP fragment management
+  * IP/TCP protocol anomaly detection & blocking
+  * Connection tracking for FTP/TFTP/SIP/etc.
+  * Deep packet inspection - pattern matching engine
+  * Deep packet inspection - application-layer protocol matchers
+  * Log management
+
+
+Requirements
+------------
+
+ Following requirements should be met in order to install zelkova
+
+  * Linux kernel 2.4.x (with CONFIG_NETFILTER support)
+  * Gcc 3.0 or above
+  * GNU Make 3.70 or above
+  * module-init-tools 2.0 or above
+
+
+Installation
+------------
+
+ See docs/INSTALL file
+
+
+License
+-------
+
+ Zelkova is released under the GNU General Public License.
+ See the COPYING file for details.
+
+
+Developers
+----------
+
+ See AUTHORS file
 
 ******************************************************************************
 
 Detailed informations are included in documents under docs/ directory.
 
-/* $id$ */
+/* $Id$ */
