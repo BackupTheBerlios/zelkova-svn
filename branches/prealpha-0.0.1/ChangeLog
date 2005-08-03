@@ -1,7 +1,15 @@
-2005-07-24 Dongsu Park <advance@berlios.de>
+2005-07-21 13:09 +0000 [r4]  advance <advance@localhost>
 
-    * 
+	* branches/prealpha-0.0.1 (added): The Prealpha-0.0.1 branch is
+	  created. Jul 21, 2005.
 
-2005-07-16 Dongsu Park <advance@berlios.de>
+2005-07-19 02:49 +0000 [r1]  advance <advance@localhost>
 
-    * : Initial release
+	* trunk/docs/AUTHORS (added), trunk/docs/TODO (added), trunk/README
+	  (added), trunk/docs/INSTALL (added), trunk (added),
+	  trunk/config.h.in (added), trunk/docs/NEWS (added),
+	  trunk/ChangeLog (added), trunk/src (added), trunk/RELEASE.NOTES
+	  (added), trunk/docs (added), trunk/docs/BUGS (added),
+	  trunk/COPYING (added), trunk/Makefile.am (added): Zelkova is
+	  initially imported
+

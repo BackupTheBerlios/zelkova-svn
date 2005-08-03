@@ -23,7 +23,10 @@
  *----------------------------------------------------------------------------
  */
 
-/*! \file */
+/**
+ * @file fistree.h
+ * Declares basic structures and defines to be used to construct the FIS-tree
+ */
 
 #ifndef __FISTREE_H__
 #define __FISTREE_H__
@@ -68,6 +71,26 @@
  * Beware that the key value '0' is not included in FIS-tree itself,
  * but included in the parent node of FIS-tree(root of FIS-tree).
  */
+
+#define DIM_IFID		0	/**< network interface id. */
+#define DIM_SRCADDR		1	/**< Source IP address */
+#define DIM_DSTADDR		2	/**< Destination IP address */
+#define DIM_SRCPORT		3	/**< Source port */
+#define DIM_DSTPORT		4	/**< Destination port */
+
+#define DIM_SPORTMASK	0x0000ffff	/**< Fetch sport from id[DIM_SRCPORT] */
+#define DIM_DPORTMASK	0x0000ffff	/**< Fetch dport from id[DIM_DSTPORT] */
+#define DIM_PROTOSHIFT	16
+
+/*
+ * Macros
+ */
+
+#define FISTREE_MAKE(rule, nelem)	fistree_make((rule), DIM_DSTPORT, (nelem))
+#define FISTREE_CLEAN(root)			fistree_clean((root))
+#define FISTREE_QUERY(root, id)		fistree_query((root), (id), DIM_DSTPORT)
+#define FISTREE_INSERT(root, rule)	fistree_insert((root), (rule), 0, DIM_DSTPORT)
+#define FISTREE_DELETE(root, rule)	fistree_delete((root), (rule), 0, DIM_DSTPORT)
 
 /* range of addresses, ..., etc. */
 
@@ -124,5 +147,12 @@ typedef struct fisrule {
 } fisrule_t;
 
 #endif	/* FISTREE_RULE */
+
+/*
+ * Function declarations
+ */
+void *fistree_make(fisrule_t *rule, int maxdim, int nelem);
+void fistree_clean(void *node);
+fisrule_t *fistree_query(void *root, uint32_t value[], int maxdim);
 
 #endif	/* __FISTREE_H__ */

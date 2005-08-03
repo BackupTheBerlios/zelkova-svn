@@ -23,7 +23,10 @@
  *----------------------------------------------------------------------------
  */
 
-/*! \file */
+/** @file zkuio.h
+ * Defines variables, constants, structures and function declarations
+ * for uio_t
+ */
 
 #ifndef __ZKUIO_H__
 #define __ZKUIO_H__

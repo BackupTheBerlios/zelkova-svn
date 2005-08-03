@@ -39,7 +39,8 @@ VER = $(shell awk -F\" '/REL/ {print $$2}' $(INCLUDEDIR)/linux/version.h)
 
 TARGET := zelkova
 OBJS = $(TARGET).o
-SRC = main.c ioctl.c
+SRC = main.c ioctl.c zkfilter.c zknat.c zkrule.c zksession.c \
+	fistree/fistree.c fistree/tftree.c
 
 all: .depend $(TARGET).o
 
@@ -54,7 +55,7 @@ install:
 .PHONY: clean
 
 clean:
-	rm -f *.o *~ core .depend
+	rm -f *.o */*.o *~ core .depend
 
 depend .depend dep:
 	$(CC) $(CFLAGS) -M *.c > $@

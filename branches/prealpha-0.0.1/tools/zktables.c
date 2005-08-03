@@ -23,7 +23,7 @@
  *----------------------------------------------------------------------------
  */
 
-/*! \file */
+/** @file */
 
 #include <stdio.h>		/* stderr */
 #include <stdlib.h>		/* EXIT_FAILURE */
@@ -33,14 +33,14 @@ static void usage(char *progname);
 static void procfile(char *name, char *file);
 
 
-/*!
+/**
  *---------------------------------------------------------------------------
  *
- * \fn int main(int argc, char *argv[])
- * \brief The main function of zktables utility
- * \param int argc
- * \param char *argv[]
- * \date 24 Jul, 2005
+ * @fn int main(int argc, char *argv[])
+ * @brief The main function of zktables utility
+ * @param int argc
+ * @param char *argv[]
+ * @date 24 Jul, 2005
  *
  *  If an user executes this utility, she starts from this function.
  *  Gets commands, arguments, and options with zelkova rules.
@@ -74,13 +74,13 @@ int main(int argc, char *argv[])
 }
 
 
-/*!
+/**
  *---------------------------------------------------------------------------
  *
- * \fn static void usage(char *progname)
- * \brief Shows a brief usage message
- * \param char *progname
- * \date 24 Jul, 2005
+ * @fn static void usage(char *progname)
+ * @brief Shows a brief usage message
+ * @param char *progname
+ * @date 24 Jul, 2005
  *
  *  If an user passes too few argumets to this utility,
  *  shows a brief usage message to the user.
@@ -95,14 +95,14 @@ static void usage(char *progname)
 }
 
 
-/*!
+/**
  *---------------------------------------------------------------------------
  *
- * \fn static void procfile(char *name, char *file)
- * \brief Processes the input rule file
- * \param char *name
- * \param char *file
- * \date 24 Jul, 2005
+ * @fn static void procfile(char *name, char *file)
+ * @brief Processes the input rule file
+ * @param char *name
+ * @param char *file
+ * @date 24 Jul, 2005
  *
  *  Processes the input rule file
  *

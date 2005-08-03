@@ -23,7 +23,7 @@
  *----------------------------------------------------------------------------
  */
 
-/*! \file */
+/** @file */
 
 #include <stdio.h>		/* stderr */
 
@@ -31,16 +31,16 @@
 
 #define MAX_RCFILE_LINE		256
 
-/*!
+/**
  *---------------------------------------------------------------------------
  *
- * \fn char *zk_readline(char *s, size_t *size, FILE *fp, int *line)
- * \brief Reads a line from given rc file of zelkova
- * \param char *s
- * \param size_t *size
- * \param FILE *fp
- * \param int *line
- * \date 24 Jul, 2005
+ * @fn char *zk_readline(char *s, size_t *size, FILE *fp, int *line)
+ * @brief Reads a line from given rc file of zelkova
+ * @param char *s
+ * @param size_t *size
+ * @param FILE *fp
+ * @param int *line
+ * @date 24 Jul, 2005
  *
  *  Reads a line from `fp' into the dynamically allocated `s',
  *  increasing `s' if necessary. The ending "\n" or "\r\n" is removed.
@@ -108,20 +108,20 @@ char *zk_readline(char *s, size_t *size, FILE *fp, int *line)
 }
 
 
-/*!
+/**
  *---------------------------------------------------------------------------
  *
- * \fn int zk_parse_rcline(const char *line, zk_buffer_t *token, zk_buffer_t *err)
- * \brief Parses lines of a zelkova rc file 
- * \param const char *line: command to execute
- * \param zk_buffer_t *token: scratch buffer to be used by parser. Caller should free
+ * @fn int zk_parse_rcline(const char *line, zk_buffer_t *token, zk_buffer_t *err)
+ * @brief Parses lines of a zelkova rc file 
+ * @param const char *line: command to execute
+ * @param zk_buffer_t *token: scratch buffer to be used by parser. Caller should free
  *               token->data when finished. This variable exists in order to
  *               avoid allocation and deallocation of a lot of memory if we
  *               are parsing many lines. Caller can pass in the memory to
  *               use, which avoids creation of new space for every call to
  *               this function.
- * \param zk_buffer_t err: where to write error messages
- * \date 24 Jul, 2005
+ * @param zk_buffer_t err: where to write error messages
+ * @date 24 Jul, 2005
  *
  *  Parses lines of a zelkova rc file.
  *

@@ -23,21 +23,32 @@
  *----------------------------------------------------------------------------
  */
 
-/** @file */
+/** @file zkfilter.c
+ * Manages filter rules and sessions
+ */
 
-#ifndef __ZKTABLES_H__
-#define __ZKTABLES_H__
+#define __NO_VERSION__
 
-/* This macro must check for *c == 0 since isspace(0) has unreliable behavior
- * on some systems */
-#define ZK_SKIPWS(c) \
-	while (*(c) && isspace ((unsigned char) *(c))) c++;
+#include <linux/kernel.h>			/* printk() */
+#include <asm/uaccess.h>			/* copy_to_user(), copy_from_user() */
+#include <linux/netfilter_ipv4/lockhelp.h>	/* *_LOCK, *_UNLOCK */
 
-typedef struct zk_buffer {
-	char	*data;		/* pointer to data */
-	char	*dptr;		/* current read/write position */
-	size_t	dsize;		/* length of data */
-	int		destroy;	/* destroy `data' when done? */
-} zk_buffer_t;
+DECLARE_RWLOCK(spd_lock);	/* A lock with SPD root and static SPD */
 
-#endif	/* __ZKTABLES_H__ */
+void	*spdroot;		/* FIS-tree root */
+
+/**
+ *---------------------------------------------------------------------------
+ *
+ * @fn     int func1(void)
+ * @brief  Brief description
+ * @param  NONE
+ * @return >=0 if normal, <0 if abnormal.
+ * @date   25 Jul, 2005
+ * @see    NONE
+ *
+ *  Detailed description
+ *
+ *---------------------------------------------------------------------------
+ */
+

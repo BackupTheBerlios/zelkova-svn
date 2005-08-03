@@ -23,7 +23,10 @@
  *----------------------------------------------------------------------------
  */
 
-/*! \file */
+/** @file zkpktinfo.h
+ * Defines variables, constants, structures and function declarations
+ * for zkpktinfo_t
+ */
 
 #ifndef __ZKPKTINFO_H__
 #define __ZKPKTINFO_H__

@@ -23,21 +23,28 @@
  *----------------------------------------------------------------------------
  */
 
-/** @file */
+/** @file zknat.c
+ * Manages NAT sessions
+ */
 
-#ifndef __ZKTABLES_H__
-#define __ZKTABLES_H__
+#define __NO_VERSION__
 
-/* This macro must check for *c == 0 since isspace(0) has unreliable behavior
- * on some systems */
-#define ZK_SKIPWS(c) \
-	while (*(c) && isspace ((unsigned char) *(c))) c++;
+DECLARE_RWLOCK(nat_lock);	/* A lock with NAT root and static NAT rule */
 
-typedef struct zk_buffer {
-	char	*data;		/* pointer to data */
-	char	*dptr;		/* current read/write position */
-	size_t	dsize;		/* length of data */
-	int		destroy;	/* destroy `data' when done? */
-} zk_buffer_t;
+void	*natroot[2];	/* NAT FIS-tree root */
 
-#endif	/* __ZKTABLES_H__ */
+/**
+ *---------------------------------------------------------------------------
+ *
+ * @fn     int func1(void)
+ * @brief  Modify checksums of outbound packets
+ * @param  NONE
+ * @return >=0 if normal, <0 if abnormal.
+ * @date   25 Jul, 2005
+ * @see    NONE
+ *
+ *  Detailed description
+ *
+ *---------------------------------------------------------------------------
+ */
+

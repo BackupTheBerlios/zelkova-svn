@@ -23,7 +23,9 @@
  *----------------------------------------------------------------------------
  */
 
-/*! \file */
+/** @file main.c
+ * Core modules of Zelkova
+ */
 
 #ifndef __KERNEL__
 # define __KERNEL__
@@ -65,16 +67,6 @@ static int			zelkova_ioctl(struct inode *, struct file *, unsigned int, unsigned
 static int			zelkova_open(struct inode *, struct file *);
 static int			zelkova_release(struct inode *, struct file *);
 
-static struct file_operations zelkova_fops = {
-	.owner		= THIS_MODULE,
-	.read		= zelkova_read,
-	.poll		= zelkova_poll,
-	.ioctl		= zelkova_ioctl,
-	.open		= zelkova_open,
-	.release	= zelkova_release,
-};
-
-
 static unsigned int zkfv_input_check (unsigned int hook,
 		struct sk_buff **pskb,
 		const struct net_device *in,
@@ -93,6 +85,30 @@ static unsigned int zkfv_output_check (unsigned int hook,
 		const struct net_device *out,
 		int (*okfn)(struct sk_buff *));
 
+/**
+ * @var   zelkova_fops
+ * @brief A file_operations interface into zelkova device driver
+ *
+ * Here we register 5 fops handlers such as read, poll, ioctl, open, release.
+ */
+static struct file_operations zelkova_fops = {
+	.owner		= THIS_MODULE,
+	.read		= zelkova_read,
+	.poll		= zelkova_poll,
+	.ioctl		= zelkova_ioctl,
+	.open		= zelkova_open,
+	.release	= zelkova_release,
+};
+
+
+/**
+ * @var   zkfv_ops
+ * @brief An array of nf_hook_ops which includes basic zelkova packet handlers
+ *
+ * Zelkova is attached into existing netfilter framework, so that at least
+ * three packet handlers should be hooked at each three points, that is,
+ * input, forward, and output.
+ */
 static struct nf_hook_ops zkfv_ops[] = {
 	/* TODO: Check differences between hooknums and make a document */
 	{
@@ -118,11 +134,16 @@ static struct nf_hook_ops zkfv_ops[] = {
 	},
 };
 
+/**
+ * @var   zelkova_run
+ * @brief A global flag which indicates whether zelkova is running.
+ *
+ * 1 if running, 0 if not running.
+ */
 static int	zelkova_run = 0;
 
-
-int zelkova_major =		ZELKOVA_MAJOR;	/**< Detailed description */
-int zelkova_nr_devs =	ZELKOVA_NR_DEVS;
+int zelkova_major =		ZELKOVA_MAJOR;	/**< Major number of zelkova device file */
+int zelkova_nr_devs =	ZELKOVA_NR_DEVS;	/**< Number of total devices */
 
 MODULE_PARM(zelkova_major, "i");
 MODULE_PARM(zelkova_nr_devs, "i");
@@ -131,6 +152,8 @@ MODULE_PARM_DESC(zelkova_nr_devs, "Total number of zelkova device files");
 MODULE_AUTHOR("Dongsu Park");
 MODULE_DESCRIPTION("High-Traffic-Processible Firewall & IPS software");
 MODULE_LICENSE("GPL");
+
+void		*spdroot;		/* FIS-tree root */
 
 void zelkova_attach(void);
 void zelkova_detach(void);
@@ -141,15 +164,17 @@ void zelkova_detach(void);
 extern int	zelkova_ioctl_filter(uint cmd, void *data, int mode);
 
 
-/*!
+/**
  *---------------------------------------------------------------------------
  *
- * \fn int zelkova_init_module(void)
- * \brief Initializes the zelkova module
- * \param NONE
- * Date: 19 Jul, 2005
+ * @fn     int zelkova_init_module(void)
+ * @brief  Initializes the zelkova module
+ * @param  NONE
+ * @return >=0 if normal, <0 if abnormal.
+ * @date   19 Jul, 2005
+ * @see    zelkova_cleanup_module()
  *
- * Attaches into kernel interceptor, and initializes character devices.
+ *  Attaches into kernel interceptor, and initializes character devices.
  *
  *---------------------------------------------------------------------------
  */
@@ -209,13 +234,16 @@ cleanup_table:
 }
 
 
-/*!
+/**
  *---------------------------------------------------------------------------
  *
- * \fn void zelkova_cleanup_module(void)
- * \brief Unload the zelkova module from kernel
- * \param 
- * Date: 19 Jul, 2005
+ * @fn     void zelkova_cleanup_module(void)
+ * @brief  Unload the zelkova module from kernel
+ * @param  NONE
+ * @return NONE
+ * @date   19 Jul, 2005
+ * @see    zelkova_init_module()
+ *
  *  Detach swip from kernel, and unload the zelkova module from kernel.
  *
  *---------------------------------------------------------------------------
@@ -237,13 +265,15 @@ static void __exit zelkova_cleanup_module(void)
 }
 
 
-/*!
+/**
  *---------------------------------------------------------------------------
  *
- * \fn int zelkova_attach(void)
- * \brief Initializes variables in the zelkova module
- * \param NONE
- * \date 19 Jul, 2005
+ * @fn void zelkova_attach(void)
+ * @brief Initializes variables in the zelkova module
+ * @param NONE
+ * @return NONE
+ * @date 19 Jul, 2005
+ * @see zelkova_detach()
  *
  *  Initializes variables in the zelkova module
  *
@@ -264,13 +294,15 @@ void zelkova_attach(void)
 }
 
 
-/*!
+/**
  *---------------------------------------------------------------------------
  *
- * \fn int zelkova_detach(void)
- * \brief Cleans variables in the zelkova module
- * \param NONE
- * \date 21 Jul, 2005
+ * @fn     void zelkova_detach(void)
+ * @brief  Cleans variables in the zelkova module
+ * @param  NONE
+ * @return NONE
+ * @date   21 Jul, 2005
+ * @see    zelkova_attach()
  *
  *  Cleans variables in the zelkova module
  *
@@ -285,16 +317,18 @@ void zelkova_detach(void)
 }
 
 
-/*!
+/**
  *---------------------------------------------------------------------------
  *
- * \fn static ssize_t zelkova_read(struct file *file, char *buf, size_t nbytes, loff_t *ppos)
- * \brief Get log informations from the zelkova device
- * \param struct file *file
- * \param char *buf
- * \param size_t nbytes
- * \param loff_t *ppos
- * \date 21 Jul, 2005
+ * @fn     static ssize_t zelkova_read(struct file *file, char *buf, size_t nbytes, loff_t *ppos)
+ * @brief  Get log informations from the zelkova device
+ * @param  struct file *file
+ * @param  char *buf
+ * @param  size_t nbytes
+ * @param  loff_t *ppos
+ * @return Return data size read, 0 if read none
+ * @date   21 Jul, 2005
+ * @see    zelkova_poll(), zelkova_ioctl(), zelkova_open(), zelkova_release()
  *
  *  Get log informations from the zelkova device
  *
@@ -325,14 +359,16 @@ static ssize_t zelkova_read(struct file *file, char *buf, size_t nbytes, loff_t 
 }
 
 
-/*!
+/**
  *---------------------------------------------------------------------------
  *
- * \fn static unsigned int zelkova_poll(struct file *file, struct poll_table_struct *wait)
- * \brief processes select operations on the character device
- * \param struct file *file
- * \param struct poll_table_struct *
- * \date 21 Jul, 2005
+ * @fn     static unsigned int zelkova_poll(struct file *file, struct poll_table_struct *wait)
+ * @brief  processes select operations on the character device
+ * @param  struct file *file
+ * @param  struct poll_table_struct *wait
+ * @return Return poll flag value, 0 if none
+ * @date   21 Jul, 2005
+ * @see    zelkova_read(), zelkova_ioctl(), zelkova_open(), zelkova_release()
  *
  *  Processes select operations on the character device
  *
@@ -360,16 +396,18 @@ static unsigned int zelkova_poll(struct file *file, struct poll_table_struct *wa
 }
 
 
-/*!
+/**
  *---------------------------------------------------------------------------
  *
- * \fn static int zelkova_ioctl(struct inode *inode, struct file *file, unsigned int cmd, unsigned long arg)
- * \brief Process data exchange operations
- * \param struct inode *inode
- * \param struct file *file
- * \param unsigned int cmd
- * \param unsigned long arg
- * \date 21 Jul, 2005
+ * @fn     static int zelkova_ioctl(struct inode *inode, struct file *file, unsigned int cmd, unsigned long arg)
+ * @brief  Process data exchange operations
+ * @param  struct inode *inode
+ * @param  struct file *file
+ * @param  unsigned int cmd
+ * @param  unsigned long arg
+ * @return 0 if normal, <0 if abnormal.
+ * @date   21 Jul, 2005
+ * @see    zelkova_read(), zelkova_poll(), zelkova_open(), zelkova_release()
  *
  *  Process data exchange operations between kernel module and
  *  another applications.
@@ -380,7 +418,7 @@ static unsigned int zelkova_poll(struct file *file, struct poll_table_struct *wa
 static int zelkova_ioctl(struct inode *inode, struct file *file, unsigned int cmd, unsigned long arg)
 {
 	static int	nioctl = 0;
-	int			unit = minor(inode->i_rdev);
+/*    int			unit = minor(inode->i_rdev);*/
 	int			mode = file->f_mode;
 
 	if (!zelkova_run) {
@@ -409,14 +447,16 @@ static int zelkova_ioctl(struct inode *inode, struct file *file, unsigned int cm
 }
 
 
-/*!
+/**
  *---------------------------------------------------------------------------
  *
- * \fn static int zelkova_open(struct inode *inode, struct file *file)
- * \brief Open the zelkova device
- * \param struct inode *inode
- * \param struct file *file
- * \date 21 Jul, 2005
+ * @fn     static int zelkova_open(struct inode *inode, struct file *file)
+ * @brief  Open the zelkova device
+ * @param  struct inode *inode
+ * @param  struct file *file
+ * @return 0 if normal, <0 if abnormal.
+ * @date   21 Jul, 2005
+ * @see    zelkova_read(), zelkova_poll(), zelkova_ioctl(), zelkova_release()
  *
  *  Open the zelkova device
  *
@@ -426,7 +466,7 @@ static int zelkova_ioctl(struct inode *inode, struct file *file, unsigned int cm
 static int zelkova_open(struct inode *inode, struct file *file)
 {
 	if (minor(inode->i_rdev) > DEV_MAX) {
-		return ENXIO;
+		return -ENXIO;
 	}
 
 	MOD_INC_USE_COUNT;
@@ -435,14 +475,16 @@ static int zelkova_open(struct inode *inode, struct file *file)
 }
 
 
-/*!
+/**
  *---------------------------------------------------------------------------
  *
- * \fn static int zelkova_release(struct inode *inode, struct file *file)
- * \brief Close the zelkova device
- * \param struct inode *inode
- * \param struct file *file
- * \date 21 Jul, 2005
+ * @fn     static int zelkova_release(struct inode *inode, struct file *file)
+ * @brief  Close the zelkova device
+ * @param  struct inode *inode
+ * @param  struct file *file
+ * @return 0 if normal, <0 if abnormal.
+ * @date   21 Jul, 2005
+ * @see    zelkova_read(), zelkova_poll(), zelkova_ioctl(), zelkova_open()
  *
  *  Close the zelkova device
  *
@@ -452,7 +494,7 @@ static int zelkova_open(struct inode *inode, struct file *file)
 static int zelkova_release(struct inode *inode, struct file *file)
 {
 	if (minor(inode->i_rdev) > DEV_MAX) {
-		return ENXIO;
+		return -ENXIO;
 	}
 
 	MOD_DEC_USE_COUNT;
@@ -461,17 +503,19 @@ static int zelkova_release(struct inode *inode, struct file *file)
 }
 
 
-/*!
+/**
  *---------------------------------------------------------------------------
  *
- * \fn static unsigned int zkfv_input_check(unsigned int hook, struct sk_buff **pskb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *))
- * \brief Check packets on the netfilter input hook
- * \param unsigned int hook
- * \param struct sk_buff **pskb
- * \param const struct net_device *in
- * \param const struct net_device *out
- * \param int (*okfn)(struct sk_buff *)
- * \date 23 Jul, 2005
+ * @fn     static unsigned int zkfv_input_check(unsigned int hook, struct sk_buff **pskb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *))
+ * @brief  Check packets on the netfilter input hook
+ * @param  unsigned int hook
+ * @param  struct sk_buff **pskb
+ * @param  const struct net_device *in
+ * @param  const struct net_device *out
+ * @param  int (*okfn)(struct sk_buff *)
+ * @return NF_ACCEPT, NF_DROP, or etc.
+ * @date   23 Jul, 2005
+ * @see    zkfv_forward_check(), zkfv_output_check()
  *
  *  Check packets on the netfilter input hook
  *
@@ -488,17 +532,19 @@ static unsigned int zkfv_input_check (unsigned int hook,
 }
 
 
-/*!
+/**
  *---------------------------------------------------------------------------
  *
- * \fn static unsigned int zkfv_forward_check(unsigned int hook, struct sk_buff **pskb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *))
- * \brief Check packets on the netfilter forward hook
- * \param unsigned int hook
- * \param struct sk_buff **pskb
- * \param const struct net_device *in
- * \param const struct net_device *out
- * \param int (*okfn)(struct sk_buff *)
- * \date 23 Jul, 2005
+ * @fn     static unsigned int zkfv_forward_check(unsigned int hook, struct sk_buff **pskb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *))
+ * @brief  Check packets on the netfilter forward hook
+ * @param  unsigned int hook
+ * @param  struct sk_buff **pskb
+ * @param  const struct net_device *in
+ * @param  const struct net_device *out
+ * @param  int (*okfn)(struct sk_buff *)
+ * @return NF_ACCEPT, NF_DROP, or etc.
+ * @date   23 Jul, 2005
+ * @see    zkfv_input_check(), zkfv_output_check()
  *
  *  Check packets on the netfilter forward hook
  *
@@ -515,17 +561,19 @@ static unsigned int zkfv_forward_check (unsigned int hook,
 }
 
 
-/*!
+/**
  *---------------------------------------------------------------------------
  *
- * \fn static unsigned int zkfv_output_check(unsigned int hook, struct sk_buff **pskb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *))
- * \brief Check packets on the netfilter output hook
- * \param unsigned int hook
- * \param struct sk_buff **pskb
- * \param const struct net_device *in
- * \param const struct net_device *out
- * \param int (*okfn)(struct sk_buff *)
- * \date 23 Jul, 2005
+ * @fn     static unsigned int zkfv_output_check(unsigned int hook, struct sk_buff **pskb, const struct net_device *in, const struct net_device *out, int (*okfn)(struct sk_buff *))
+ * @brief  Check packets on the netfilter output hook
+ * @param  unsigned int hook
+ * @param  struct sk_buff **pskb
+ * @param  const struct net_device *in
+ * @param  const struct net_device *out
+ * @param  int (*okfn)(struct sk_buff *)
+ * @return NF_ACCEPT, NF_DROP, or etc.
+ * @date   23 Jul, 2005
+ * @see    zkfv_input_check(), zkfv_forward_check()
  *
  *  Check packets on the netfilter output hook
  *
