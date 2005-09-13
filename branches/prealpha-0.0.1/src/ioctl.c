@@ -53,12 +53,15 @@ typedef struct zk_filter_stat {
 
 zk_filter_stat_t	zkfr_stat;	/* inbound/outbound filter statistics */
 
+#ifdef __KERNEL__
 DECLARE_RWLOCK_EXTERN(spd_lock);	/* R/W lock with SPD root and static SPD */
+#endif	/* __KERNEL__ */
 
 /*
  * Extern variables
  */
 extern void		*spdroot;		/* FIS-tree root */
+extern zkspd_t	staticspd;		/* static SPD (in zkfilter.c) */
 
 /**
  *---------------------------------------------------------------------------
@@ -82,8 +85,8 @@ int zelkova_ioctl_filter(uint cmd, void *data, int mode)
 	static int			precnt = 0;
 
 	fisrule_t			*rule, frule;
-	zkspd_t			zkspd;
-	zkact_t			*zkact;
+	zkspd_t				zkspd;
+	zkact_t				*zkact;
 	zk_policy_t			*po;
 	zkdfrule_t			*zkdfrule;
 	void				*root, *oldroot;
@@ -190,7 +193,7 @@ int zelkova_ioctl_filter(uint cmd, void *data, int mode)
 		/* Assign each member of zkspd */
 		zkspd.spd_table		= rule;
 		zkspd.spd_act		= zkact;
-/*        zkspd.spd_policy	= po;*/
+		zkspd.spd_policy	= po;
 		zkspd.spd_prerule	= NULL;
 		zkspd.spd_precnt	= precnt;
 
@@ -250,7 +253,17 @@ int zelkova_ioctl_filter(uint cmd, void *data, int mode)
 			FISTREE_CLEAN(oldroot);
 		}
 
+		/* Remove the old static SPD and set a new static SPD */
+
+		spd_clean(&staticspd);
+
+		memcpy(&staticspd, &zkspd, sizeof(zkspd));
+		staticspd.spd_prerule = prerule;
+
 		WRITE_UNLOCK(&spd_lock);
+
+		prerule = NULL;
+		precnt = 0;
 
 		break;
 

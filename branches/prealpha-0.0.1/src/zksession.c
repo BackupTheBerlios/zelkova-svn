@@ -38,7 +38,7 @@
 #include "zksession.h"
 
 
-DECLARE_RWLOCK(ipsess_lock);	/**< A lock with the session table */
+static DECLARE_RWLOCK(ipsess_lock);	/**< A lock with the session table */
 
 static zkipsess_t	zis_g_head;	/**< Pointer to the global linked list for IP session */
 static zkipsess_t	zns_g_head;	/**< Pointer to the global linked list for NAT session */

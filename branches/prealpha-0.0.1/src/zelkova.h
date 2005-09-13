@@ -93,6 +93,15 @@
 #define SIOCSETFR			_IOW(FILTER_IOCTL, 0x00, sizeof(int *))
 
 /*
+ * Useful macros
+ */
+
+/* SIZEOFARR(): get the count of array elements */
+#ifndef SIZEOFARR
+#define SIZEOFARR(x)		(sizeof((x)) / sizeof((x)[0]))
+#endif
+
+/*
  */
 
 #define ZELKOVA_IOC_MAXNR	1

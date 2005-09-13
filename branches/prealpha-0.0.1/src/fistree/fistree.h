@@ -77,6 +77,7 @@
 #define DIM_DSTADDR		2	/**< Destination IP address */
 #define DIM_SRCPORT		3	/**< Source port */
 #define DIM_DSTPORT		4	/**< Destination port */
+#define DIM_MAX			4	/**< Maximum dimension */
 
 #define DIM_SPORTMASK	0x0000ffff	/**< Fetch sport from id[DIM_SRCPORT] */
 #define DIM_DPORTMASK	0x0000ffff	/**< Fetch dport from id[DIM_DSTPORT] */
@@ -154,5 +155,31 @@ typedef struct fisrule {
 void *fistree_make(fisrule_t *rule, int maxdim, int nelem);
 void fistree_clean(void *node);
 fisrule_t *fistree_query(void *root, uint32_t value[], int maxdim);
+
+
+/*
+ * Inline function defines
+ */
+
+/* range2interval(): Set an interval with a begin point and an end point. */
+static inline fistree_interval_t *range2interval(fistree_interval_t *i, uint32_t begin, uint32_t end)
+{
+	if (begin == 0) {
+		i->type = INTERVAL_ANYTOANY;
+	}
+	else {
+		i->type = INTERVAL_RANGEONE;
+		i->r.one.begin = begin;
+		i->r.one.end = end;
+	}
+
+	return i;
+}
+
+/* point2interval(): Translate an axis point into an interval */
+static inline fistree_interval_t *point2interval(fistree_interval_t *i, uint32_t point)
+{
+	return range2interval(i, point, point + 1);
+}
 
 #endif	/* __FISTREE_H__ */
